@@ -2,16 +2,16 @@ import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+// export const useAuth = () => useContext(AuthContext);
 
-const AuthState = ({ children }) => {
+const AuthStateContext = ({ children }) => {
     const navigate = useNavigate();
     const [token, setToken] = useState(localStorage.getItem("token"));
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loginUser, setLoginUser] = useState(null);
 
 
@@ -99,7 +99,10 @@ const AuthState = ({ children }) => {
         return data;
     }
 
-    return <AuthContext.Provider value={{ token, error, loading, isAuthenticated, signInUser, signUpUser, logout, getUserData, loginUser }}>{children}</AuthContext.Provider>
+    return <AuthContext.Provider value={
+        { token, error, loading, isAuthenticated, signInUser, signUpUser, logout, getUserData, loginUser }
+    }>{children}</AuthContext.Provider>
 }
 
-export default AuthState;
+export default AuthStateContext;
+
