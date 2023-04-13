@@ -1,24 +1,33 @@
-import logo from './logo.svg';
 import './App.css';
+import 'semantic-ui-css/semantic.min.css'
+import Signin from './components/Signin';
+import { Container } from 'semantic-ui-react';
+import Home from './components/Home';
+import { Route, Routes } from 'react-router-dom';
+import Signup from './components/Signup';
+import Layout from './components/Layout';
+import AuthState from './contexts/AuthContext';
+import Me from './components/Me';
+import ProtectedRoute from './components/ProtectedRoute';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthState>
+      <Container>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path='/me' element={<Me />} />
+            </Route>
+
+          </Route>
+        </Routes>
+      </Container>
+    </AuthState>
   );
 }
 
