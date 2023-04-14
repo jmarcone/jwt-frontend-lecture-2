@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
@@ -7,102 +7,117 @@ export const AuthContext = createContext();
 // export const useAuth = () => useContext(AuthContext);
 
 const AuthStateContext = ({ children }) => {
-    const navigate = useNavigate();
-    const [token, setToken] = useState(localStorage.getItem("token"));
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loginUser, setLoginUser] = useState(null);
+  const navigate = useNavigate();
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginUser, setLoginUser] = useState(null);
 
-
-    useEffect(() => {
-        if(!isAuthenticated){
-            const getUser = async () => {
-                try {
-                    setLoading(true)
-                    const data = await getUserData();
-                    setLoginUser(data);
-                    setIsAuthenticated(true)
-                    setLoading(false)
-                } catch (error) {
-                    setToken(null)
-                    localStorage.removeItem("token");
-                    setLoading(false)
-                }
-            }
-    
-            token && getUser()
-        }
-        
-    }, [token, isAuthenticated])
-
-    const signInUser = async (email, password) => {
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const getUser = async () => {
         try {
-            setLoading(true);
-
-            const { data: token } = await axios.post("http://localhost:3030/jwt/signin", {
-                email: email,
-                password: password,
-            })
-
-            setError(null)
-            localStorage.setItem('token', token);
-            setToken(token);
-            setIsAuthenticated(true)
-            navigate("/me", {replace: true})
-        } catch (e) {
-            console.error(e)
-            setError(e.response.data.error)
+          setLoading(true);
+          const data = await getUserData();
+          setLoginUser(data);
+          setIsAuthenticated(true);
+          setLoading(false);
+        } catch (error) {
+          setToken(null);
+          localStorage.removeItem("token");
+          setLoading(false);
         }
-        setLoading(false);
+      };
+
+      token && getUser();
     }
+  }, [token, isAuthenticated]);
 
-    const signUpUser = async (name, email, password) => {
-        try {
-            setLoading(true);
+  const signInUser = async (email, password) => {
+    try {
+      setLoading(true);
 
-            const { data: token } = await axios.post("http://localhost:3030/jwt/signup", {
-                name: name,
-                email: email,
-                password: password,
-            })
-
-            setError(null)
-            localStorage.setItem('token', token);
-            setToken(token);
-            setIsAuthenticated(true)
-            navigate("/me", {replace: true})
-
-        } catch (e) {
-
-            console.error(e)
-            setError(e.response.data.error)
+      const { data: token } = await axios.post(
+        "http://localhost:3030/jwt/signin",
+        {
+          email: email,
+          password: password,
         }
-        setLoading(false);
+      );
+
+      setError(null);
+      localStorage.setItem("token", token);
+      setToken(token);
+      setIsAuthenticated(true);
+      navigate("/me", { replace: true });
+    } catch (e) {
+      console.error(e);
+      setError(e.response.data.error);
     }
+    setLoading(false);
+  };
 
-    const logout = () => {
-        console.log("login out")
-        localStorage.removeItem("token");
-        setToken(null)
-        setIsAuthenticated(false)
-        navigate("/")
+  const signUpUser = async (name, email, password) => {
+    try {
+      setLoading(true);
+
+      const { data: token } = await axios.post(
+        "http://localhost:3030/jwt/signup",
+        {
+          name: name,
+          email: email,
+          password: password,
+        }
+      );
+
+      setError(null);
+      localStorage.setItem("token", token);
+      setToken(token);
+      setIsAuthenticated(true);
+      navigate("/me", { replace: true });
+    } catch (e) {
+      console.error(e);
+      setError(e.response.data.error);
     }
+    setLoading(false);
+  };
 
-    const getUserData = async () => {
-        const { data } = await axios.get("http://localhost:3030/jwt/me", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+  const logout = () => {
+    console.log("login out");
+    localStorage.removeItem("token");
+    setToken(null);
+    setIsAuthenticated(false);
+    navigate("/");
+  };
 
-        return data;
-    }
+  const getUserData = async () => {
+    const { data } = await axios.get("http://localhost:3030/jwt/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    return <AuthContext.Provider value={
-        { token, error, loading, isAuthenticated, signInUser, signUpUser, logout, getUserData, loginUser }
-    }>{children}</AuthContext.Provider>
-}
+    return data;
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        token,
+        error,
+        loading,
+        isAuthenticated,
+        signInUser,
+        signUpUser,
+        logout,
+        getUserData,
+        loginUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
 export default AuthStateContext;
-
