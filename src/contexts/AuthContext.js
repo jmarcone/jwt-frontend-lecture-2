@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext();
 
 // export const useAuth = () => useContext(AuthContext);
+const API_URL = 'https://jwt-lecture-backend.onrender.com';
 
 const AuthStateContext = ({ children }) => {
     const navigate = useNavigate();
@@ -40,7 +41,7 @@ const AuthStateContext = ({ children }) => {
         try {
             setLoading(true);
 
-            const { data: token } = await axios.post("http://localhost:3030/jwt/signin", {
+            const { data: token } = await axios.post(`${API_URL}/jwt/signin`, {
                 email: email,
                 password: password,
             })
@@ -61,7 +62,7 @@ const AuthStateContext = ({ children }) => {
         try {
             setLoading(true);
 
-            const { data: token } = await axios.post("http://localhost:3030/jwt/signup", {
+            const { data: token } = await axios.post(`${API_URL}/jwt/signup`, {
                 name: name,
                 email: email,
                 password: password,
@@ -90,7 +91,7 @@ const AuthStateContext = ({ children }) => {
     }
 
     const getUserData = async () => {
-        const { data } = await axios.get("http://localhost:3030/jwt/me", {
+        const { data } = await axios.get(`${API_URL}/jwt/me`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
