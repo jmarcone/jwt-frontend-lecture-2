@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext();
 
 // export const useAuth = () => useContext(AuthContext);
-const API_URL = 'https://jwt-lecture-backend.onrender.com';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const AuthStateContext = ({ children }) => {
     const navigate = useNavigate();
